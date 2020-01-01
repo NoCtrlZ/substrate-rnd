@@ -1,0 +1,13 @@
+[tasks.run]
+description = "build and run chain"
+script = ['''
+#!/usr/bin/env bash
+echo "build wasm"
+./scripts/build.sh
+echo "compile rust code"
+cargo build --release
+echo "delete chain log"
+./target/release/substrate-rnd purge-chain --dev -y
+echo "start chain"
+./target/release/substrate-rnd --dev
+''']
