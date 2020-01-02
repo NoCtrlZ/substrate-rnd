@@ -11,3 +11,11 @@ echo "delete chain log"
 echo "start chain"
 ./target/release/substrate-rnd --dev
 ''']
+
+[tasks.com]
+description = "build chain"
+script = ['''
+#!/usr/bin/env bash
+echo "build wasm"
+./scripts/build.sh
+''']
