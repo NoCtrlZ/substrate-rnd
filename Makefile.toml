@@ -1,0 +1,8 @@
+[tasks.start]
+description = "setup all components"
+script = ['''
+#!/usr/bin/env bash
+echo "start chain runtime"
+./blockchain/target/release/substrate-rnd purge-chain --dev -y
+./blockchain/target/release/substrate-rnd --dev & cd ui && yarn start
+''']
