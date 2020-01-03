@@ -7,13 +7,24 @@ pub trait Trait: system::Trait {}
 
 #[derive(Encode, Decode, Default, Clone, PartialEq)]
 #[cfg_attr(feature = "std", derive(Debug))]
-
 // 提案
 pub struct Proposal <AccountId, Hash> {
 	// 提案者のEOA
 	proposer: AccountId,
 	// 提案のHash値
 	proposal_id: Hash,
+}
+
+#[derive(Encode, Decode, Default, Clone, PartialEq)]
+#[cfg_attr(feature = "std", derive(Debug))]
+// 裁判所変更提案
+pub struct Impeachment <AccountId, Hash> {
+	// 提案者のEOA
+	proposer: AccountId,
+	// 提案のHash値
+	impeachment_id: Hash,
+	// 変更先裁判所アドレス
+	new_court: AccountId,
 }
 
 decl_storage! {
@@ -24,10 +35,18 @@ decl_storage! {
 		People: map u64 => T::AccountId;
 		// EOAがDAOに登録されているか
 		IsRegistered: map T::AccountId => bool;
+
 		// 提案の構造体の現在のHash(Debug用)
 		PrevProposalId: T::Hash;
 		// 提案のHashと提案の構造体のマッピング
 		Proposals: map T::Hash => Proposal<T::AccountId, T::Hash>;
+
+		// 裁判所アドレス
+		Court: T::AccountId;
+		// 裁判所変更提案の直近のHash(Debug用)
+		PrevImpeachmentId: T::Hash;
+		// 裁判所変更提案
+		Impeachments: map T::Hash => Impeachment<T::AccountId, T::Hash>;
     }
 }
 
@@ -48,13 +67,29 @@ decl_module! {
 		fn propose(origin) -> Result {
 			let sender = ensure_signed(origin)?;
 			if <IsRegistered<T>>::get(&sender) {
-				let proposal_id = (<system::Module<T>>::random_seed(), &sender, <Population<T>>::get()).using_encoded(<T as system::Trait>::Hashing::hash);
+				let proposal_id = (<system::Module<T>>::random_seed(), &sender, <PrevProposalId<T>>::get()).using_encoded(<T as system::Trait>::Hashing::hash);
 				<PrevProposalId<T>>::put(&proposal_id);
 				let new_proposal = Proposal {
 					proposer: sender,
 					proposal_id: proposal_id,
 				};
 				<Proposals<T>>::insert(proposal_id, new_proposal);
+			}
+			Ok(())
+		}
+
+		// 裁判所のアドレスを変える提案を作成する処理
+		fn impeachment(origin, new_court: T::AccountId) -> Result {
+			let sender = ensure_signed(origin)?;
+			if <IsRegistered<T>>::get(&sender) {
+				let impeachment_id = (<system::Module<T>>::random_seed(), &sender, <PrevImpeachmentId<T>>::get()).using_encoded(<T as system::Trait>::Hashing::hash);
+				<PrevImpeachmentId<T>>::put(&impeachment_id);
+				let new_impeachment = Impeachment {
+					proposer: sender,
+					impeachment_id: impeachment_id,
+					new_court: new_court,
+				};
+				<Impeachments<T>>::insert(impeachment_id, new_impeachment);
 			}
 			Ok(())
 		}
