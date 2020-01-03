@@ -4,5 +4,15 @@ script = ['''
 #!/usr/bin/env bash
 echo "start chain runtime"
 ./blockchain/target/release/substrate-rnd purge-chain --dev -y
-./blockchain/target/release/substrate-rnd --dev & cd ui && yarn start
+./blockchain/target/release/substrate-rnd --dev & cd frontend && yarn start
+''']
+
+[tasks.com]
+description = "setup blockchain"
+script = ['''
+#!/usr/bin/env bash
+echo "build chain"
+cd blockchain &&\
+./scripts/build.sh &&\
+cargo build --release
 ''']

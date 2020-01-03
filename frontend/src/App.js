@@ -13,7 +13,7 @@ import Events from './Events';
 import Extrinsics from './Extrinsics';
 import Metadata from './Metadata';
 import NodeInfo from './NodeInfo';
-import TemplateModule from './TemplateModule';
+import Actions from './Actions';
 import Transfer from './Transfer';
 import Upgrade from './Upgrade';
 
@@ -56,6 +56,9 @@ function Main () {
             <BlockNumber finalized />
           </Grid.Row>
           <Grid.Row stretched>
+          <Actions accountPair={accountPair} />
+          </Grid.Row>
+          <Grid.Row stretched>
             <Balances />
           </Grid.Row>
           <Grid.Row>
@@ -66,9 +69,6 @@ function Main () {
             <Extrinsics accountPair={accountPair} />
             <ChainState />
             <Events />
-          </Grid.Row>
-          <Grid.Row>
-            <TemplateModule accountPair={accountPair} />
           </Grid.Row>
         </Grid>
         <DeveloperConsole />
