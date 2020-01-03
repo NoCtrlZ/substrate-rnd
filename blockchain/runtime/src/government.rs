@@ -27,6 +27,18 @@ pub struct Impeachment <AccountId, Hash> {
 	new_court: AccountId,
 }
 
+#[derive(Encode, Decode, Default, Clone, PartialEq)]
+#[cfg_attr(feature = "std", derive(Debug))]
+// 提案の廃止案
+pub struct Amendment<AccountId, Hash> {
+	// 提案者のEOA
+	proposer: AccountId,
+	// 提案のHash値
+	amendment_id: Hash,
+	// 廃止希望の提案のHash値
+	proposal_id: Hash,
+}
+
 decl_storage! {
     trait Store for Module<T: Trait> as Custom {
 		// 人口
@@ -36,7 +48,7 @@ decl_storage! {
 		// EOAがDAOに登録されているか
 		IsRegistered: map T::AccountId => bool;
 
-		// 提案の構造体の現在のHash(Debug用)
+		// 提案の構造体の直近のHash(Debug用)
 		PrevProposalId: T::Hash;
 		// 提案のHashと提案の構造体のマッピング
 		Proposals: map T::Hash => Proposal<T::AccountId, T::Hash>;
@@ -47,6 +59,11 @@ decl_storage! {
 		PrevImpeachmentId: T::Hash;
 		// 裁判所変更提案
 		Impeachments: map T::Hash => Impeachment<T::AccountId, T::Hash>;
+
+		// 廃止案の構造体の直近のHash(Debug用)
+		PrevAmendmentId: T::Hash;
+		// 提案のHashと提案の構造体のマッピング
+		Amendments: map T::Hash => Amendment<T::AccountId, T::Hash>;
     }
 }
 
@@ -90,6 +107,22 @@ decl_module! {
 					new_court: new_court,
 				};
 				<Impeachments<T>>::insert(impeachment_id, new_impeachment);
+			}
+			Ok(())
+		}
+
+		// 提案を廃止する提案を作成する処理
+		fn repeal(origin, proposal_id: T::Hash) -> Result {
+			let sender = ensure_signed(origin)?;
+			if <IsRegistered<T>>::get(&sender) {
+				let amendment_id = (<system::Module<T>>::random_seed(), &sender, <PrevImpeachmentId<T>>::get()).using_encoded(<T as system::Trait>::Hashing::hash);
+				<PrevAmendmentId<T>>::put(&amendment_id);
+				let new_amendment = Amendment {
+					proposer: sender,
+					amendment_id: amendment_id,
+					proposal_id: proposal_id,
+				};
+				<Amendments<T>>::insert(amendment_id, new_amendment);
 			}
 			Ok(())
 		}
