@@ -13,7 +13,9 @@ import Events from './Events';
 import Extrinsics from './Extrinsics';
 import Metadata from './Metadata';
 import NodeInfo from './NodeInfo';
-import Actions from './Actions';
+import Government from './Government';
+import GovernmentState from './GovernmentState';
+import Database from './Database';
 import Transfer from './Transfer';
 import Upgrade from './Upgrade';
 
@@ -56,7 +58,9 @@ function Main () {
             <BlockNumber finalized />
           </Grid.Row>
           <Grid.Row stretched>
-          <Actions accountPair={accountPair} />
+            <Government accountPair={accountPair} />
+            <GovernmentState />
+            <Database />
           </Grid.Row>
           <Grid.Row stretched>
             <Balances />

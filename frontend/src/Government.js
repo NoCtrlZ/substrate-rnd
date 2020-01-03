@@ -4,10 +4,8 @@ import { Grid, Form, Dropdown, Input } from 'semantic-ui-react';
 import { useSubstrate } from './substrate-lib';
 import { TxButton } from './substrate-lib/components';
 
-export default function Actions (props) {
+export default function Extrinsics (props) {
   const { api } = useSubstrate();
-  const [modulesList, setModulesList] = useState([]);
-  console.log(modulesList);
   const [status, setStatus] = useState(null);
   const [callableFunctionList, setCallableFunctionList] = useState([]);
   const { accountPair } = props;
@@ -17,21 +15,7 @@ export default function Actions (props) {
     callableFunction: '',
     input: ''
   });
-  console.log("This is setForm")
-  console.log(formState.module)
   const { module, callableFunction, input } = formState;
-
-  useEffect(() => {
-    const modules = Object.keys(api.tx)
-      .sort()
-      .map(module => ({
-        key: module,
-        value: module,
-        text: module
-      }));
-
-    setModulesList(modules);
-  }, [api]);
 
   useEffect(() => {
     if (module !== '') {
@@ -52,20 +36,8 @@ export default function Actions (props) {
 
   return (
     <Grid.Column>
-      <h1>Actions</h1>
+      <h1>Government</h1>
       <Form>
-        <Form.Field>
-          <Dropdown
-            placeholder='Select a module to call'
-            fluid
-            label='Module'
-            onChange={onChange}
-            search
-            selection
-            state='module'
-            options={modulesList}
-          />
-        </Form.Field>
         <Form.Field>
           <Dropdown
             placeholder='Select a function to call'
